@@ -1,5 +1,6 @@
 package com.example.cats;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.BeanRegistrar;
 import org.springframework.beans.factory.BeanRegistry;
@@ -12,12 +13,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.jdbc.core.dialect.JdbcDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.registry.ImportHttpServices;
 
 import java.util.Collection;
 import java.util.Map;
@@ -31,13 +33,32 @@ public class CatsApplication {
     }
 
     @Bean
-    JdbcPostgresDialect myJdbcPostgresDialect (){
+    JdbcPostgresDialect myJdbcPostgresDialect() {
         return JdbcPostgresDialect.INSTANCE;
     }
-
-
 }
 
+@Configuration
+@ImportHttpServices(CatFacts.class)
+class CatFactsClientConfiguration {
+
+    @Bean
+    ApplicationRunner catFactsRunner(CatFacts facts) {
+        return _ -> facts.facts().facts()
+                .forEach(IO::println);
+    }
+}
+
+record CatFact(@JsonProperty ("fact_number") int factNumber, String fact) {
+}
+
+record CatFactsResults (Collection <CatFact> facts) {}
+
+interface CatFacts {
+
+    @GetExchange("https://www.catfacts.net/api/")
+    CatFactsResults facts();
+}
 
 @Controller
 @ResponseBody
@@ -49,8 +70,13 @@ class DogsController {
         this.repository = repository;
     }
 
-    @GetMapping("/dogs")
-    Collection<Map<String, Object>> dogs() {
+    @GetMapping(value = "/dogs", version = "1.1")
+    Collection<Dog> dogs() {
+        return this.repository.findAll();
+    }
+
+    @GetMapping(value = "/dogs", version = "1.0")
+    Collection<Map<String, Object>> dogsClassic() {
         return this.repository
                 .findAll()
                 .stream()
@@ -59,7 +85,8 @@ class DogsController {
     }
 }
 
-record Runner(DogRepository repository) implements ApplicationRunner {
+record Runner(DogRepository repository)
+        implements ApplicationRunner {
 
     @Override
     public void run(@NonNull ApplicationArguments args) throws Exception {
