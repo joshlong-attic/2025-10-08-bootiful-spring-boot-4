@@ -9,7 +9,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -25,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @SpringBootApplication
+@ImportHttpServices(CatFacts.class)
 @Import(DogBeanRegistrar.class)
 public class CatsApplication {
 
@@ -38,21 +38,11 @@ public class CatsApplication {
     }
 }
 
-@Configuration
-@ImportHttpServices(CatFacts.class)
-class CatFactsClientConfiguration {
-
-    @Bean
-    ApplicationRunner catFactsRunner(CatFacts facts) {
-        return _ -> facts.facts().facts()
-                .forEach(IO::println);
-    }
+record CatFact(@JsonProperty("fact_number") int factNumber, String fact) {
 }
 
-record CatFact(@JsonProperty ("fact_number") int factNumber, String fact) {
+record CatFactsResults(Collection<CatFact> facts) {
 }
-
-record CatFactsResults (Collection <CatFact> facts) {}
 
 interface CatFacts {
 
@@ -85,12 +75,15 @@ class DogsController {
     }
 }
 
-record Runner(DogRepository repository)
+record Runner(DogRepository repository, CatFacts catFacts)
         implements ApplicationRunner {
 
     @Override
     public void run(@NonNull ApplicationArguments args) throws Exception {
-        this.repository.findAll().forEach(System.out::println);
+
+        this.repository.findAll().forEach(IO::println);
+
+        this.catFacts.facts().facts().forEach(IO::println);
     }
 }
 
@@ -100,6 +93,8 @@ class DogBeanRegistrar implements BeanRegistrar {
     @Override
     public void register(@NonNull BeanRegistry registry, @NonNull Environment env) {
         registry.registerBean(Runner.class);
+        registry.registerBean(JdbcPostgresDialect.class, c -> c
+                .supplier(_ -> JdbcPostgresDialect.INSTANCE));
     }
 }
 
