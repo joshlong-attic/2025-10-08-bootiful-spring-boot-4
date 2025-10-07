@@ -13,4 +13,11 @@
 * we want to call another service. might fail. let's use resilience methods. well show retryable but there's also ConcurrencyLimit
 * let's build an api to export information about the dogs in the shelter.
 * we have many conflicting versions so well use API versioning and a request parameter 
-* nice! looking good. time to think about production. i'll need security. show the new spring security customizers and MFA support. 
+* nice! looking good. time to think about production. I'll need security. show the new spring security customizers and MFA support.
+* i want to scale this so ill use virtual threads. works even better with java 24+ !! nothing new here, but worth noting. 
+* i want ot compile as a graalvm image. but this is a snapshot so i need to register a hint. why? the new jackson 3 support! 
+```java
+hints.reflection().registerType(tools.jackson.databind.jsontype.NamedType.class);
+hints.resources().registerPattern("static/resources/**");
+```
+* now i think we're ready 
