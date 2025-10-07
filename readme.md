@@ -6,7 +6,8 @@
 * support schedule
 * new jakarta ee 11 baseline 
 * java 17 remains the same
-* well need to build a db. spring data jdbc. new aot queries.
+* jspecify is everywhere. 
+* well need to build a db. spring data jdbc. build a custom findByName method( we'll come back to this later!)
 * let's try running all these. ill create a bean. how do i register it. I could use java config, but ill use `BeanRegistrar` instead.
 * let's build a client to get cat facts
 * i could use the RestClient or RestTemplate. good news, Spring Boot's modularized. so I can bring in spring-boot-starter-restclients.
@@ -20,4 +21,11 @@
 hints.reflection().registerType(tools.jackson.databind.jsontype.NamedType.class);
 hints.resources().registerPattern("static/resources/**");
 ```
-* now i think we're ready 
+* notice how the new registerType method takes a class.  
+* now i want to run this in native mode.
+* the aot repositories r awesome, too! but they'll need a JdbcDialect instance to work in native mode. hopefully this gets fixed in time for prodution
+
+```java
+registry.registerBean(JdbcPostgresDialect.class, c -> c.supplier(_ -> JdbcPostgresDialect.INSTANCE));
+```
+* now i think we're ready lets build! 

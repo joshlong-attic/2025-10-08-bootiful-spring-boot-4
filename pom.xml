@@ -28,6 +28,7 @@
     </scm>
     <properties>
         <jackson-bom.version>3.0.0</jackson-bom.version>
+        <spring-security.version>7.0.0-SNAPSHOT</spring-security.version>
         <spring-data-bom.version>2025.1.0-SNAPSHOT</spring-data-bom.version>
         <java.version>25</java.version>
     </properties>
@@ -48,23 +49,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-restclient</artifactId>
         </dependency>
-   <!--     <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
-     <!--   <dependency>
+      <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-webauthn</artifactId>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-<!--            <scope>runtime</scope>-->
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
