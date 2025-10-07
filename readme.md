@@ -1,5 +1,12 @@
 # README
 
+## running this sample
+```shell 
+docker compose up -d   
+./mvnw spring-boot:run
+```
+
+## script
 * java 25; java scripts! 
 * jbang.dev
 * spring boot 4 release time
