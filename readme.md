@@ -14,6 +14,7 @@ docker compose up -d
 * new jakarta ee 11 baseline 
 * java 17 remains the same
 * jspecify is everywhere. 
+* so is jackson 3!
 * well need to build a db. spring data jdbc. build a custom findByName method( we'll come back to this later!)
 * let's try running all these. ill create a bean. how do i register it. I could use java config, but ill use `BeanRegistrar` instead.
 * let's build a client to get cat facts
