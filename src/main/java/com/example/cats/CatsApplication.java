@@ -44,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * todo JmsClient
- * todo Resilience Methods
  */
 @EnableGlobalMultiFactorAuthentication(authorities = {
         GrantedAuthorities.FACTOR_OTT_AUTHORITY,
