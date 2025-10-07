@@ -158,7 +158,7 @@ class DogsController {
         this.repository = repository;
     }
 
-    @GetMapping(value = "/dogs")
+    @GetMapping(value = "/dogs" ,version = "1.1")
     Collection<Dog> dogs() {
         return this.repository.findAll();
     }
