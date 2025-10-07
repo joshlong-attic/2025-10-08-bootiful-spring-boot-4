@@ -18,9 +18,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.resilience.annotation.ConcurrencyLimit;
 import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.resilience.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -75,6 +75,7 @@ class RiskyClient {
 
     private final AtomicInteger counter = new AtomicInteger();
 
+    @ConcurrencyLimit(10)
     @Retryable(maxAttempts = 4, includes = UnknownHostException.class)
     void connect() throws UnknownHostException {
         if (this.counter.incrementAndGet() < 3) {
@@ -129,6 +130,7 @@ record Runner(DogRepository repository, RiskyClient riskyClient, CatFacts catFac
     @Override
     public void run(@NonNull ApplicationArguments args) throws Exception {
         this.repository.findAll().forEach(IO::println);
+        this.repository.findByName("Prancer").forEach(IO::println);
         this.catFacts.facts().facts().forEach(IO::println);
         this.riskyClient.connect();
     }
@@ -139,7 +141,7 @@ interface DogRepository
         extends ListCrudRepository<@NonNull Dog, @NonNull Integer> {
 
     @Query("SELECT * FROM DOG WHERE NAME = :name")
-    Collection <Dog> findByName(@NonNull String name);
+    Collection<Dog> findByName(@NonNull String name);
 }
 
 record Dog(@Id int id, String description, String name) {
